@@ -30,19 +30,23 @@ export default function App() {
     setItems([...items, item]);
   }
 
-  function handelDeletItem(id){
+  function handleDeletItem(id){
     setItems((items) => items.filter((item)=> item.id !== id));
   }
 
-  function handeleToggleItem(id){
+  function handleToggleItem(id){
     setItems((items) => items.map((item) => (item.id === id ? {...item, checked : !item.checked}:item)));
+  }
+
+  function handleClearItem(id){
+    setItems([])
   }
 
   return (
     <div className="app">
       <Header />
       <Form onAddItem={handleAddItem} />
-      <GroceryList items={items} onDeleteItem={handelDeletItem} onToggleItem={handeleToggleItem}/>
+      <GroceryList items={items} onDeleteItem={handleDeletItem} onToggleItem={handleToggleItem} onClearItems={handleClearItem}/>
       <Footer />
   </div>
   )
@@ -88,23 +92,38 @@ function Form({onAddItem}){
   );
 }
 
-function GroceryList ({items, onDeleteItem, onToggleItem}){
+function GroceryList ({items, onDeleteItem, onToggleItem, onClearItems}){
+  const [sortBy, setSortBy] = useState('input');
+
+  let sortedItems;
+
+  switch(sortBy){
+    case 'name':
+      sortedItems = items.slice().sort((a, b) => a.name.localeCompare(b.name));
+    break;
+    case 'checked':
+      sortedItems = items.slice().sort((a, b) => a.checked - b.checked);
+    break;
+    default:
+    sortedItems = items;
+  }
+
   return(
     <>
       <div className="list">
         <ul>
-          {items.map((item) =>(
+          {sortedItems.map((item) =>(
            <Item item={item} key={item.id} onDeleteItem={onDeleteItem} onToggleItem={onToggleItem}/>
           ))}
         </ul>
       </div>
       <div className="actions">
-        <select>
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="input">Urutkan berdasarkan urutan input</option>
           <option value="name">Urutkan berdasarkan nama barang</option>
           <option value="checked">Urutkan berdasarkan ceklis</option>
         </select>
-        <button>Bersihkan Daftar</button>
+        <button onClick={onClearItems}>Bersihkan Daftar</button>
       </div>
     </>
   )
