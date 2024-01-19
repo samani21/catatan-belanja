@@ -47,7 +47,7 @@ export default function App() {
       <Header />
       <Form onAddItem={handleAddItem} />
       <GroceryList items={items} onDeleteItem={handleDeletItem} onToggleItem={handleToggleItem} onClearItems={handleClearItem}/>
-      <Footer />
+      <Footer items={items} />
   </div>
   )
 }
@@ -106,6 +106,7 @@ function GroceryList ({items, onDeleteItem, onToggleItem, onClearItems}){
     break;
     default:
     sortedItems = items;
+    break;
   }
 
   return(
@@ -139,6 +140,11 @@ function Item({item, onDeleteItem, onToggleItem}){
   );
 }
 
-function Footer(){
-  return <footer className="stats">Ada 10 barang di daftar belanjaan, 5 barang sudah dibeli (50%)</footer>
+function Footer({items}){
+  if(items.length === 0) return <footer className="stats">Daftar belanjaan kosong</footer>
+  const totalItems = items.length;
+  const checkedItems = items.filter((item)=>item.checked).length;
+  const percentage = Math.round((checkedItems/totalItems)*100)
+  
+  return <footer className="stats">Ada {totalItems} barang di daftar belanjaan, {checkedItems} barang sudah dibeli ({percentage}%)</footer>
 }
